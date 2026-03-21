@@ -1,0 +1,19 @@
+# Xcode build artefacts
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.xccheckout
+*.moved-aside
+
+# Xcode user schemes (keep shared schemes only)
+GcloudSessionWatch.xcodeproj/xcuserdata/
+GcloudSessionWatch.xcodeproj/project.xcworkspace/xcuserdata/
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Nested project created by Xcode inside source folder (not the real project)
+GcloudSessionWatch/GcloudSessionWatch.xcodeproj/
+GcloudSessionWatch/GcloudSessionWatch/
+GcloudSessionWatch/GcloudSessionWatchTests/
