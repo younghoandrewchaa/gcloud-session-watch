@@ -4,9 +4,10 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$SCRIPT_DIR/.."
 EXPORT_OPTIONS="$ROOT/ExportOptions.plist"
+VERSION=$(grep -m1 'MARKETING_VERSION' "$ROOT/GcloudSessionWatch.xcodeproj/project.pbxproj" | awk -F' = ' '{gsub(/[; ]/, "", $2); print $2}')
 ARCHIVE="$ROOT/build/GcloudSessionWatch.xcarchive"
 EXPORT_DIR="$ROOT/build/export"
-DMG="$ROOT/build/GcloudSessionWatch.dmg"
+DMG="$ROOT/build/GcloudSessionWatch-${VERSION}.dmg"
 
 if [ ! -f "$EXPORT_OPTIONS" ]; then
     echo "Error: ExportOptions.plist not found."
@@ -43,7 +44,7 @@ echo "==> Staging DMG contents..."
 STAGING="$ROOT/build/dmg-staging"
 rm -rf "$STAGING"
 mkdir -p "$STAGING"
-cp -R "$EXPORT_DIR/GcloudSessionWatch.app" "$STAGING/"
+cp -R "$EXPORT_DIR/Gcloud Session Watch.app" "$STAGING/"
 ln -s /Applications "$STAGING/Applications"
 
 echo "==> Creating DMG..."

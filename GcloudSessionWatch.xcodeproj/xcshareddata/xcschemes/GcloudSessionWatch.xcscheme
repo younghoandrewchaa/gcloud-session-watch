@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "F82995002F6F4F47002059A9"
-               BuildableName = "GcloudSessionWatch.app"
+               BuildableName = "Gcloud Session Watch.app"
                BlueprintName = "GcloudSessionWatch"
                ReferencedContainer = "container:GcloudSessionWatch.xcodeproj">
             </BuildableReference>
@@ -71,7 +71,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F82995002F6F4F47002059A9"
-            BuildableName = "GcloudSessionWatch.app"
+            BuildableName = "Gcloud Session Watch.app"
             BlueprintName = "GcloudSessionWatch"
             ReferencedContainer = "container:GcloudSessionWatch.xcodeproj">
          </BuildableReference>
@@ -88,7 +88,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F82995002F6F4F47002059A9"
-            BuildableName = "GcloudSessionWatch.app"
+            BuildableName = "Gcloud Session Watch.app"
             BlueprintName = "GcloudSessionWatch"
             ReferencedContainer = "container:GcloudSessionWatch.xcodeproj">
          </BuildableReference>
