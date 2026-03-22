@@ -28,8 +28,11 @@ struct GcloudSessionWatchApp: App {
             .frame(width: 160)
             .padding(.vertical, 8)
         } label: {
-            Text(monitor.labelText)
-                .foregroundStyle(monitor.labelColor)
+            HStack(spacing: 4) {
+                Image(systemName: "key.icloud.fill")
+                Text(monitor.labelText)
+            }
+            .foregroundStyle(monitor.labelColor)
         }
         .menuBarExtraStyle(.window)
 

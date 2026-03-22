@@ -38,7 +38,7 @@ final class SessionMonitorTests: XCTestCase {
     func testMissingFile_labelText() {
         mock.mockDate = nil
         let monitor = SessionMonitor(fileProvider: mock)
-        XCTAssertEqual(monitor.labelText, "G --:--")
+        XCTAssertEqual(monitor.labelText, "--:--")
     }
 
     // MARK: Valid session
@@ -56,7 +56,7 @@ final class SessionMonitorTests: XCTestCase {
         let offset: TimeInterval = -(3600 + 27 * 60 + 30) // -5250
         mock.mockDate = Date(timeIntervalSinceNow: offset)
         let monitor = SessionMonitor(fileProvider: mock)
-        XCTAssertEqual(monitor.labelText, "G 3:32")
+        XCTAssertEqual(monitor.labelText, "3:32")
     }
 
     func testValidSession_minutesPaddedToTwoDigits() {
@@ -65,7 +65,7 @@ final class SessionMonitorTests: XCTestCase {
         let offset: TimeInterval = -14550 // -(4 * 3600 + 2 * 60 + 30)
         mock.mockDate = Date(timeIntervalSinceNow: offset)
         let monitor = SessionMonitor(fileProvider: mock)
-        XCTAssertEqual(monitor.labelText, "G 0:57")
+        XCTAssertEqual(monitor.labelText, "0:57")
     }
 
     // MARK: Warning state (≤ 10 minutes = 600 s)
@@ -109,7 +109,7 @@ final class SessionMonitorTests: XCTestCase {
     func testExpiredSession_labelText() {
         mock.mockDate = Date(timeIntervalSinceNow: -6 * 3600)
         let monitor = SessionMonitor(fileProvider: mock)
-        XCTAssertEqual(monitor.labelText, "G EXPIRED")
+        XCTAssertEqual(monitor.labelText, "EXPIRED")
     }
 
     func testExpiredSession_timeRemainingIsZero() {
@@ -133,7 +133,7 @@ final class SessionMonitorTests: XCTestCase {
         mock.mockDate = Date(timeIntervalSinceNow: offset)
         let monitor = SessionMonitor(fileProvider: mock)
         XCTAssertEqual(monitor.credentialsState, .valid)
-        XCTAssertEqual(monitor.labelText, "G 1:32")
+        XCTAssertEqual(monitor.labelText, "1:32")
     }
 
     func testDefaultDuration_whenKeyAbsent_is5Hours() {
@@ -143,7 +143,7 @@ final class SessionMonitorTests: XCTestCase {
         mock.mockDate = Date(timeIntervalSinceNow: offset)
         let monitor = SessionMonitor(fileProvider: mock)
         XCTAssertEqual(monitor.credentialsState, .valid)
-        XCTAssertEqual(monitor.labelText, "G 0:40")
+        XCTAssertEqual(monitor.labelText, "0:40")
     }
 
     // MARK: Detailed time text (H:MM:SS)
