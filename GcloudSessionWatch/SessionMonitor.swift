@@ -60,12 +60,12 @@ final class SessionMonitor: ObservableObject {
     
     var labelText: String {
         switch credentialsState {
-        case .missing: return "--:--"
-        case .expired: return "EXPIRED"
+        case .missing: return "G --:--"
+        case .expired: return "G EXPIRED"
         case .valid, .warning:
             let h = Int(timeRemaining) / 3600
             let m = (Int(timeRemaining) % 3600) / 60
-            return "\(h):\(String(format: "%02d", m))"
+            return "G \(h):\(String(format: "%02d", m))"
         }
     }
     
