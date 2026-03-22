@@ -27,7 +27,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		F829951B2F6F4F48002059A9 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		F829951B2F6F4F48002059A9 /* Exceptions for "GcloudSessionWatch" folder in "GcloudSessionWatchTests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				FileTimestamp.swift,
@@ -41,7 +41,7 @@
 		F82995032F6F4F47002059A9 /* GcloudSessionWatch */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				F829951B2F6F4F48002059A9 /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
+				F829951B2F6F4F48002059A9 /* Exceptions for "GcloudSessionWatch" folder in "GcloudSessionWatchTests" target */,
 			);
 			path = GcloudSessionWatch;
 			sourceTree = "<group>";
