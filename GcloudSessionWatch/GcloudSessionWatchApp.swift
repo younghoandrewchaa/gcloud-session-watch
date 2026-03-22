@@ -9,7 +9,9 @@ struct GcloudSessionWatchApp: App {
     var body: some Scene {
         // MenuBarExtra MUST come before Settings — SettingsLink relies on this ordering.
         MenuBarExtra {
-            // SettingsLink requires macOS 14; use sendAction for 13 compatibility.
+            Text(monitor.detailedTimeText)
+                .foregroundStyle(monitor.labelColor)
+            Divider()
             if #available(macOS 14.0, *) {
                 SettingsLink { Text("Settings...") }
             } else {
