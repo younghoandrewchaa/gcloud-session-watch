@@ -17,3 +17,7 @@ GcloudSessionWatch.xcodeproj/project.xcworkspace/xcuserdata/
 GcloudSessionWatch/GcloudSessionWatch.xcodeproj/
 GcloudSessionWatch/GcloudSessionWatch/
 GcloudSessionWatch/GcloudSessionWatchTests/
+
+# Release artefacts
+ExportOptions.plist
+build/
