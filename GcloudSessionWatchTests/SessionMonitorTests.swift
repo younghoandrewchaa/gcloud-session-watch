@@ -161,16 +161,18 @@ final class SessionMonitorTests: XCTestCase {
     }
 
     func testDetailedTimeText_showsSeconds() {
-        // mtime 5250 s ago (1h 27m 30s), default 5h → 12750 s = 3h 32m 30s remaining
+        // mtime 5250 s ago (1h 27m 30s), default 5h → ~12750 s remaining.
+        // Int() truncates: tiny elapsed time during init → "3:32:29" not "3:32:30".
         mock.mockDate = Date(timeIntervalSinceNow: -5250)
         let monitor = SessionMonitor(fileProvider: mock)
-        XCTAssertEqual(monitor.detailedTimeText, "3:32:30")
+        XCTAssertEqual(monitor.detailedTimeText, "3:32:29")
     }
 
     func testDetailedTimeText_minutesPaddedAndSecondsShown() {
-        // mtime 14550 s ago (4h 2m 30s), default 5h → 3450 s = 57m 30s remaining
+        // mtime 14550 s ago (4h 2m 30s), default 5h → ~3450 s remaining.
+        // Int() truncates: tiny elapsed time during init → "0:57:29" not "0:57:30".
         mock.mockDate = Date(timeIntervalSinceNow: -14550)
         let monitor = SessionMonitor(fileProvider: mock)
-        XCTAssertEqual(monitor.detailedTimeText, "0:57:30")
+        XCTAssertEqual(monitor.detailedTimeText, "0:57:29")
     }
 }

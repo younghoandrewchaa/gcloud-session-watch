@@ -78,7 +78,7 @@ final class SessionMonitor: ObservableObject {
         case .missing: return "--:--:--"
         case .expired: return "EXPIRED"
         case .valid, .warning:
-            let total = lround(timeRemaining)
+            let total = Int(timeRemaining)
             let h = total / 3600
             let m = (total % 3600) / 60
             let s = total % 60
@@ -108,6 +108,8 @@ private extension SessionMonitor {
         }
     }
 
+    // Intentionally mirrors the state-transition logic in tick().
+    // If tick()'s branching changes, update refreshDisplay() to match.
     func refreshDisplay() {
         guard let expiry = expiryDate else { return }
         let remaining = expiry.timeIntervalSinceNow
