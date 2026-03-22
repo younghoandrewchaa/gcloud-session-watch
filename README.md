@@ -51,6 +51,26 @@ This updates the credentials file, and the countdown resets automatically within
 - **Notification:** Schedules a `UNUserNotificationCenter` alert at the computed expiry time. Cancelled and rescheduled on each poll if the file changes (i.e. after a new login).
 - **No network calls, no third-party dependencies.**
 
+## Building a distributable DMG
+
+Requires an Apple Developer Program membership and a Developer ID Application certificate.
+
+```sh
+cp ExportOptions.plist.template ExportOptions.plist
+# Edit ExportOptions.plist and replace YOUR_TEAM_ID with your Team ID
+./scripts/build-dmg.sh
+```
+
+The DMG is written to `build/GcloudSessionWatch.dmg`. `ExportOptions.plist` and `build/` are gitignored.
+
+### Regenerating the app icon
+
+The icon was exported from SF Symbols as an SVG, then converted with ImageMagick:
+
+```sh
+magick -density 720 -background none key.icloud.fill.svg -resize 1024x1024 AppIcon1024.png
+```
+
 ## Running tests
 
 ```sh
