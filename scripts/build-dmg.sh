@@ -14,12 +14,24 @@ if [ ! -f "$EXPORT_OPTIONS" ]; then
     exit 1
 fi
 
-echo "==> Archiving..."
+echo "==> Cleaning previous archive..."
+rm -rf "$ARCHIVE" "$EXPORT_DIR"
+
+TEAM_ID=$(plutil -extract teamID raw "$EXPORT_OPTIONS")
+if [ -z "$TEAM_ID" ] || [ "$TEAM_ID" = "YOUR_TEAM_ID" ]; then
+    echo "Error: teamID in ExportOptions.plist is missing or not set."
+    exit 1
+fi
+
+echo "==> Archiving (team: $TEAM_ID)..."
 xcodebuild archive \
     -scheme GcloudSessionWatch \
     -destination 'generic/platform=macOS' \
     -archivePath "$ARCHIVE" \
-    CODE_SIGN_STYLE=Automatic
+    CODE_SIGN_STYLE=Automatic \
+    DEVELOPMENT_TEAM="$TEAM_ID" \
+    SKIP_INSTALL=NO \
+    INSTALL_PATH=/Applications
 
 echo "==> Exporting and notarizing..."
 xcodebuild -exportArchive \
@@ -27,10 +39,17 @@ xcodebuild -exportArchive \
     -exportOptionsPlist "$EXPORT_OPTIONS" \
     -exportPath "$EXPORT_DIR"
 
+echo "==> Staging DMG contents..."
+STAGING="$ROOT/build/dmg-staging"
+rm -rf "$STAGING"
+mkdir -p "$STAGING"
+cp -R "$EXPORT_DIR/GcloudSessionWatch.app" "$STAGING/"
+ln -s /Applications "$STAGING/Applications"
+
 echo "==> Creating DMG..."
 hdiutil create \
     -volname "GcloudSessionWatch" \
-    -srcfolder "$EXPORT_DIR/GcloudSessionWatch.app" \
+    -srcfolder "$STAGING" \
     -ov -format UDZO \
     "$DMG"
 
