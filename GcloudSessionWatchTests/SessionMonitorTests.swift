@@ -145,4 +145,32 @@ final class SessionMonitorTests: XCTestCase {
         XCTAssertEqual(monitor.credentialsState, .valid)
         XCTAssertEqual(monitor.labelText, "G 0:40")
     }
+
+    // MARK: Detailed time text (H:MM:SS)
+
+    func testDetailedTimeText_missing() {
+        mock.mockDate = nil
+        let monitor = SessionMonitor(fileProvider: mock)
+        XCTAssertEqual(monitor.detailedTimeText, "--:--:--")
+    }
+
+    func testDetailedTimeText_expired() {
+        mock.mockDate = Date(timeIntervalSinceNow: -6 * 3600)
+        let monitor = SessionMonitor(fileProvider: mock)
+        XCTAssertEqual(monitor.detailedTimeText, "EXPIRED")
+    }
+
+    func testDetailedTimeText_showsSeconds() {
+        // mtime 5250 s ago (1h 27m 30s), default 5h → 12750 s = 3h 32m 30s remaining
+        mock.mockDate = Date(timeIntervalSinceNow: -5250)
+        let monitor = SessionMonitor(fileProvider: mock)
+        XCTAssertEqual(monitor.detailedTimeText, "3:32:30")
+    }
+
+    func testDetailedTimeText_minutesPaddedAndSecondsShown() {
+        // mtime 14550 s ago (4h 2m 30s), default 5h → 3450 s = 57m 30s remaining
+        mock.mockDate = Date(timeIntervalSinceNow: -14550)
+        let monitor = SessionMonitor(fileProvider: mock)
+        XCTAssertEqual(monitor.detailedTimeText, "0:57:30")
+    }
 }

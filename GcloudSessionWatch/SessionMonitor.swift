@@ -25,6 +25,8 @@ final class SessionMonitor: ObservableObject {
     private var sessionDurationSeconds: TimeInterval
     
     private var timer: Timer?
+    private var displayTimer: Timer?
+    private var expiryDate: Date?
     private var defaultsObserver: NSObjectProtocol?
     
     private let fileProvider: FileTimestampProvider
@@ -47,12 +49,14 @@ final class SessionMonitor: ObservableObject {
         
         tick()
         startTimer()
+        startDisplayTimer()
         observeDefaults()
         requestNotificationPermission()
     }
     
     deinit {
         timer?.invalidate()
+        displayTimer?.invalidate()
         if let observer = defaultsObserver {
             NotificationCenter.default.removeObserver(observer)
         }
@@ -69,6 +73,19 @@ final class SessionMonitor: ObservableObject {
         }
     }
     
+    var detailedTimeText: String {
+        switch credentialsState {
+        case .missing: return "--:--:--"
+        case .expired: return "EXPIRED"
+        case .valid, .warning:
+            let total = lround(timeRemaining)
+            let h = total / 3600
+            let m = (total % 3600) / 60
+            let s = total % 60
+            return "\(h):\(String(format: "%02d", m)):\(String(format: "%02d", s))"
+        }
+    }
+
     var labelColor: Color {
         switch credentialsState {
         case .missing, .valid: return .primary
@@ -83,20 +100,17 @@ private extension SessionMonitor {
         timer = Timer.scheduledTimer(withTimeInterval: 30, repeats: true) { [weak self] _ in
             MainActor.assumeIsolated { self?.tick() }
         }
-        
     }
-    
-    func tick() {
-        guard let mtime = fileProvider.modificationDate(at: credentialsPath) else {
-            credentialsState = .missing
-            timeRemaining = 0
-            cancelNotification()
-            return
+
+    func startDisplayTimer() {
+        displayTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+            MainActor.assumeIsolated { self?.refreshDisplay() }
         }
-        
-        let expiry = mtime.addingTimeInterval(sessionDurationSeconds)
+    }
+
+    func refreshDisplay() {
+        guard let expiry = expiryDate else { return }
         let remaining = expiry.timeIntervalSinceNow
-        
         if remaining <= 0 {
             credentialsState = .expired
             timeRemaining = 0
@@ -107,7 +121,32 @@ private extension SessionMonitor {
             credentialsState = .valid
             timeRemaining = remaining
         }
-        
+    }
+    
+    func tick() {
+        guard let mtime = fileProvider.modificationDate(at: credentialsPath) else {
+            credentialsState = .missing
+            timeRemaining = 0
+            expiryDate = nil
+            cancelNotification()
+            return
+        }
+
+        let expiry = mtime.addingTimeInterval(sessionDurationSeconds)
+        self.expiryDate = expiry
+        let remaining = expiry.timeIntervalSinceNow
+
+        if remaining <= 0 {
+            credentialsState = .expired
+            timeRemaining = 0
+        } else if remaining <= Self.warningThreshold {
+            credentialsState = .warning
+            timeRemaining = remaining
+        } else {
+            credentialsState = .valid
+            timeRemaining = remaining
+        }
+
         scheduleNotification(at: expiry)
     }
     
