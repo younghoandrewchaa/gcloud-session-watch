@@ -124,6 +124,31 @@ final class SessionMonitorTests: XCTestCase {
         XCTAssertEqual(monitor.labelColor, Color.red)
     }
 
+    func testIconColor_missing_isRed() {
+        mock.mockDate = nil
+        let monitor = SessionMonitor(fileProvider: mock)
+        XCTAssertEqual(monitor.iconColor, Color.red)
+    }
+    
+    func testIconColor_valid_isGreen() {
+        mock.mockDate = Date(timeIntervalSinceNow: -3600) // 1h ago, 4h remaining
+        let monitor = SessionMonitor(fileProvider: mock)
+        XCTAssertEqual(monitor.iconColor, Color.green)
+    }
+
+    func testIconColor_warning_isOrange() {
+        // 9 minutes remaining — warning state
+        mock.mockDate = Date(timeIntervalSinceNow: -(5 * 3600 - 540))
+        let monitor = SessionMonitor(fileProvider: mock)
+        XCTAssertEqual(monitor.iconColor, Color.orange)
+    }
+
+    func testIconColor_expired_isRed() {
+        mock.mockDate = Date(timeIntervalSinceNow: -6 * 3600) // expired 1h ago
+        let monitor = SessionMonitor(fileProvider: mock)
+        XCTAssertEqual(monitor.iconColor, Color.red)
+    }
+    
     // MARK: Session duration from UserDefaults
 
     func testCustomSessionDuration_3Hours() {

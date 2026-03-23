@@ -93,6 +93,14 @@ final class SessionMonitor: ObservableObject {
         case .expired: return .red
         }
     }
+    
+    var iconColor: Color {
+        switch credentialsState {
+        case .missing, .expired: return .red
+        case .warning: return .orange
+        case .valid: return .green
+        }
+    }
 }
 
 private extension SessionMonitor {
