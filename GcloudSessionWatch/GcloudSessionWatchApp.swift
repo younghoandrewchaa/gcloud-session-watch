@@ -28,7 +28,13 @@ struct GcloudSessionWatchApp: App {
             .frame(width: 160)
             .padding(.vertical, 8)
         } label: {
-            Image(systemName: "key.icloud.fill").foregroundStyle(monitor.iconColor)
+            Image(nsImage: {
+                let cfg = NSImage.SymbolConfiguration(paletteColors: [NSColor(monitor.iconColor)])
+                let img = (NSImage(systemSymbolName: "key.icloud.fill", accessibilityDescription: nil)?
+                    .withSymbolConfiguration(cfg)) ?? NSImage()
+                img.isTemplate = false
+                return img
+            }())
         }
         .menuBarExtraStyle(.window)
 
