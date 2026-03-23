@@ -6,16 +6,18 @@ A macOS menu bar app that shows how much time remains before your [Google Cloud 
 
 The app reads the modification timestamp of `~/.config/gcloud/application_default_credentials.json` and counts down to the session expiry. The countdown appears directly in the menu bar, and a macOS notification fires when the session expires.
 
-**Menu bar label:**
+**Menu bar icon:**
 
-| State | Label | Colour |
-|---|---|---|
-| Valid session | `G 4:32` | Default |
-| Expiring soon (≤ 10 min) | `G 0:07` | Orange |
-| Expired | `G EXPIRED` | Red |
-| No credentials file | `G --:--` | Default |
+| State | Icon colour |
+|---|---|
+| Valid session | Green |
+| Expiring soon (≤ 10 min) | Amber |
+| Expired | Red |
+| No credentials file | Red |
 
-Click the menu bar item to see a live `H:MM:SS` countdown.
+Click the icon to see a live `H:MM:SS` countdown.
+
+![Screenshot showing the green key icon in the menu bar and the dropdown with a 3:11:07 countdown](screenshot.png)
 
 ## Requirements
 
