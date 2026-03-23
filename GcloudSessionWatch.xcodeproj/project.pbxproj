@@ -22,7 +22,7 @@
 
 /* Begin PBXFileReference section */
 		F824C9A92F6F50FD00A984EA /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
-		F82995012F6F4F47002059A9 /* GcloudSessionWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GcloudSessionWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F82995012F6F4F47002059A9 /* Gcloud Session Watch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Gcloud Session Watch.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F829950C2F6F4F48002059A9 /* GcloudSessionWatchTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GcloudSessionWatchTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -93,7 +93,7 @@
 		F82995022F6F4F47002059A9 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F82995012F6F4F47002059A9 /* GcloudSessionWatch.app */,
+				F82995012F6F4F47002059A9 /* Gcloud Session Watch.app */,
 				F829950C2F6F4F48002059A9 /* GcloudSessionWatchTests.xctest */,
 			);
 			name = Products;
@@ -121,7 +121,7 @@
 			packageProductDependencies = (
 			);
 			productName = GcloudSessionWatch;
-			productReference = F82995012F6F4F47002059A9 /* GcloudSessionWatch.app */;
+			productReference = F82995012F6F4F47002059A9 /* Gcloud Session Watch.app */;
 			productType = "com.apple.product-type.application";
 		};
 		F829950B2F6F4F48002059A9 /* GcloudSessionWatchTests */ = {
@@ -361,7 +361,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = GcloudSessionWatch/Info.plist;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.gcloud-session-watch";
 				PRODUCT_NAME = "Gcloud Session Watch";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -377,15 +377,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				INSTALL_PATH = /Applications;
-				SKIP_INSTALL = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = GcloudSessionWatch/Info.plist;
-				MARKETING_VERSION = 1.0;
+				INSTALL_PATH = /Applications;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.gcloud-session-watch";
 				PRODUCT_NAME = "Gcloud Session Watch";
+				SKIP_INSTALL = NO;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
