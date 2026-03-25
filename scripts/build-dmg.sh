@@ -24,6 +24,8 @@ if [ -z "$TEAM_ID" ] || [ "$TEAM_ID" = "YOUR_TEAM_ID" ]; then
     exit 1
 fi
 
+SIGNING_IDENTITY="Developer ID Application: DEEPEYES Limited ($TEAM_ID)"
+
 echo "==> Archiving (team: $TEAM_ID)..."
 xcodebuild archive \
     -scheme GcloudSessionWatch \
@@ -34,7 +36,7 @@ xcodebuild archive \
     SKIP_INSTALL=NO \
     INSTALL_PATH=/Applications
 
-echo "==> Exporting and notarizing..."
+echo "==> Exporting..."
 xcodebuild -exportArchive \
     -archivePath "$ARCHIVE" \
     -exportOptionsPlist "$EXPORT_OPTIONS" \
@@ -53,6 +55,20 @@ hdiutil create \
     -srcfolder "$STAGING" \
     -ov -format UDZO \
     "$DMG"
+
+echo "==> Signing DMG..."
+codesign --force --timestamp -s "$SIGNING_IDENTITY" "$DMG"
+
+echo "==> Submitting DMG to Apple Notary Service (this may take a few minutes)..."
+xcrun notarytool submit "$DMG" \
+    --keychain-profile "GcloudSessionWatch" \
+    --wait
+
+echo "==> Stapling notarization ticket..."
+xcrun stapler staple "$DMG"
+
+echo "==> Verifying..."
+spctl --assess --type open --context context:primary-signature --verbose "$DMG"
 
 echo ""
 echo "Done: $DMG"
