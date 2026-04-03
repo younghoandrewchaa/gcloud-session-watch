@@ -11,27 +11,33 @@ struct GcloudSessionWatchApp: App {
         MenuBarExtra {
             VStack(spacing: 8) {
                 if let update = updateChecker.availableUpdate {
-                    HStack(spacing: 8) {
-                        Image(systemName: "arrow.down.circle.fill")
-                            .foregroundStyle(.blue)
-                        Text("v\(update.version) available")
-                            .font(.caption)
-                            .foregroundStyle(.blue)
-                        Spacer()
+                    VStack(spacing: 6) {
+                        HStack(spacing: 7) {
+                            Image(systemName: "arrow.down.app.fill")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundStyle(.white)
+                                .padding(5)
+                                .background(Color.orange, in: RoundedRectangle(cornerRadius: 6))
+                            Text("v\(update.version) available")
+                                .font(.system(size: 12))
+                                .foregroundStyle(.orange)
+                        }
                         Button("Update") {
                             updateChecker.availableUpdate = nil
                             NSWorkspace.shared.open(update.url)
                         }
-                        .controlSize(.small)
-                        .buttonStyle(.borderedProminent)
-                        Button("Later") {
-                            updateChecker.availableUpdate = nil
-                        }
-                        .controlSize(.small)
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 4)
+                        .background(Color.orange, in: RoundedRectangle(cornerRadius: 5))
                         .buttonStyle(.plain)
-                        .foregroundStyle(.secondary)
                     }
-                    Divider()
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 8)
+                    .background(Color.orange.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
+                    .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(Color.orange.opacity(0.18), lineWidth: 0.5))
                 }
                 Text(monitor.detailedTimeText)
                     .foregroundStyle(monitor.labelColor)
@@ -43,7 +49,7 @@ struct GcloudSessionWatchApp: App {
             }
             .frame(width: 200)
             .padding(.vertical, 8)
-            .onAppear {
+            .task {
                 updateChecker.startPeriodicChecks()
             }
         } label: {

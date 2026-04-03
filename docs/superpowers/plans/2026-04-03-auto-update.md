@@ -31,6 +31,7 @@
 Create `GcloudSessionWatch/UpdateChecker.swift`:
 
 ```swift
+import Combine
 import Foundation
 
 private struct GitHubRelease: Decodable {
@@ -89,13 +90,28 @@ final class UpdateChecker: ObservableObject {
 }
 ```
 
-- [ ] **Step 2: Create `UpdateCheckerTests.swift` with version parsing and comparison tests**
+- [ ] **Step 2: Add `UpdateChecker.swift` to the test target's membership in `project.pbxproj`**
+
+This project compiles source files directly into the test bundle rather than using `@testable import`. `FileTimestamp.swift` and `SessionMonitor.swift` are already listed as membership exceptions — `UpdateChecker.swift` must be added the same way.
+
+In `GcloudSessionWatch.xcodeproj/project.pbxproj`, find the `PBXFileSystemSynchronizedBuildFileExceptionSet` block and add `UpdateChecker.swift`:
+
+```
+membershipExceptions = (
+    FileTimestamp.swift,
+    SessionMonitor.swift,
+    UpdateChecker.swift,
+);
+```
+
+> **Note:** SourceKit may show a false "No such module 'XCTest'" diagnostic in the test file — this is a known Xcode IDE issue where SourceKit indexes the test file in the main app target's context. The actual build and test run are not affected. You can safely ignore it.
+
+- [ ] **Step 3: Create `UpdateCheckerTests.swift` with version parsing and comparison tests**
 
 Create `GcloudSessionWatchTests/UpdateCheckerTests.swift`:
 
 ```swift
 import XCTest
-@testable import GcloudSessionWatch
 
 @MainActor
 final class UpdateCheckerTests: XCTestCase {
@@ -148,7 +164,7 @@ final class UpdateCheckerTests: XCTestCase {
 }
 ```
 
-- [ ] **Step 3: Run these tests — expect them to PASS (parsing logic is already implemented)**
+- [ ] **Step 4: Run these tests — expect them to PASS (parsing logic is already implemented)**
 
 ```bash
 xcodebuild test \
@@ -161,10 +177,10 @@ xcodebuild test \
 
 Expected: 9 tests pass.
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
-git add GcloudSessionWatch/UpdateChecker.swift GcloudSessionWatchTests/UpdateCheckerTests.swift
+git add GcloudSessionWatch/UpdateChecker.swift GcloudSessionWatchTests/UpdateCheckerTests.swift GcloudSessionWatch.xcodeproj/project.pbxproj
 git commit -m "feat: add UpdateChecker scaffold with version parsing logic"
 ```
 
@@ -384,27 +400,33 @@ struct GcloudSessionWatchApp: App {
         MenuBarExtra {
             VStack(spacing: 8) {
                 if let update = updateChecker.availableUpdate {
-                    HStack(spacing: 8) {
-                        Image(systemName: "arrow.down.circle.fill")
-                            .foregroundStyle(.blue)
-                        Text("v\(update.version) available")
-                            .font(.caption)
-                            .foregroundStyle(.blue)
-                        Spacer()
+                    VStack(spacing: 6) {
+                        HStack(spacing: 7) {
+                            Image(systemName: "arrow.down.app.fill")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundStyle(.white)
+                                .padding(5)
+                                .background(Color.orange, in: RoundedRectangle(cornerRadius: 6))
+                            Text("v\(update.version) available")
+                                .font(.system(size: 12))
+                                .foregroundStyle(.orange)
+                        }
                         Button("Update") {
                             updateChecker.availableUpdate = nil
                             NSWorkspace.shared.open(update.url)
                         }
-                        .controlSize(.small)
-                        .buttonStyle(.borderedProminent)
-                        Button("Later") {
-                            updateChecker.availableUpdate = nil
-                        }
-                        .controlSize(.small)
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 4)
+                        .background(Color.orange, in: RoundedRectangle(cornerRadius: 5))
                         .buttonStyle(.plain)
-                        .foregroundStyle(.secondary)
                     }
-                    Divider()
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 8)
+                    .background(Color.orange.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
+                    .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(Color.orange.opacity(0.18), lineWidth: 0.5))
                 }
                 Text(monitor.detailedTimeText)
                     .foregroundStyle(monitor.labelColor)
@@ -416,7 +438,7 @@ struct GcloudSessionWatchApp: App {
             }
             .frame(width: 200)
             .padding(.vertical, 8)
-            .onAppear {
+            .task {
                 updateChecker.startPeriodicChecks()
             }
         } label: {
@@ -439,7 +461,11 @@ struct GcloudSessionWatchApp: App {
 
 > **Note on width:** The frame width is widened from 160 to 200 to give the update banner enough room to display without clipping.
 
+> **Note on `.task` vs `.onAppear`:** `.task` is used instead of `.onAppear` because `.onAppear` is unreliable for triggering async work in a `.menuBarExtraStyle(.window)` popover. `.task` fires reliably when the window content appears.
+
 > **Note on `NSWorkspace`:** `@Environment(\.openURL)` is a View-only API. Since the MenuBarExtra content is a view builder inside the App (not a standalone `View` struct), `NSWorkspace.shared.open(url)` is used instead — it opens the URL in the default browser the same way.
+
+> **Note on banner design:** The banner uses an orange theme (not blue) with a centered layout — icon badge + version text on row 1, a single "Update" button on row 2. No "Later" dismiss button. The card uses an explicit `.background` + `.overlay` for the border rather than `.borderedProminent` + `.tint`, since `.tint` is unreliable for button colors on macOS.
 
 - [ ] **Step 3: Build to verify no compile errors**
 
@@ -483,10 +509,9 @@ Temporarily change the `UpdateChecker()` init in `GcloudSessionWatchApp.swift` t
 - [ ] **Step 2: Run the app and verify the banner**
 
 Run the app (⌘R in Xcode). Click the menu bar icon. Verify:
-- A blue banner "v1.2.0 available" appears at the top of the popover ✓
-- Clicking **Update** opens the browser to the releases page, and the banner disappears ✓
-- Clicking **Later** dismisses the banner without opening the browser ✓
-- Opening the popover a second time: the banner is gone (it was dismissed) ✓
+- An orange card banner appears at the top of the popover with "v1.2.0 available" and an **Update** button ✓
+- Clicking **Update** opens the browser to the releases page and the banner disappears ✓
+- Opening the popover a second time: the banner is gone ✓
 
 - [ ] **Step 3: Revert the temporary test init**
 
@@ -512,7 +537,7 @@ Expected: all tests pass (14 UpdateChecker + existing SessionMonitor tests).
 
 ```bash
 git add GcloudSessionWatch/GcloudSessionWatchApp.swift
-git commit -m "chore: revert test-only UpdateChecker init after smoke test"
+git commit -m "chore: revert temporary fake UpdateChecker init used for smoke test"
 ```
 
 ---
