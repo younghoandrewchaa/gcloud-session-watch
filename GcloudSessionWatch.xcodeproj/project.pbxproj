@@ -32,6 +32,7 @@
 			membershipExceptions = (
 				FileTimestamp.swift,
 				SessionMonitor.swift,
+				UpdateChecker.swift,
 			);
 			target = F829950B2F6F4F48002059A9 /* GcloudSessionWatchTests */;
 		};
