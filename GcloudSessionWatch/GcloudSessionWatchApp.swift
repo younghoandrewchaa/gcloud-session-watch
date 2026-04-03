@@ -7,21 +7,13 @@ struct GcloudSessionWatchApp: App {
     @StateObject private var monitor = SessionMonitor()
 
     var body: some Scene {
-        // MenuBarExtra MUST come before Settings — SettingsLink relies on this ordering.
         MenuBarExtra {
             VStack(spacing: 8) {
                 Text(monitor.detailedTimeText)
                     .foregroundStyle(monitor.labelColor)
                     .font(.system(.body, design: .monospaced))
                 Divider()
-                if #available(macOS 14.0, *) {
-                    SettingsLink { Text("Settings...") }
-                } else {
-                    Button("Settings...") {
-                        NSApp.activate(ignoringOtherApps: true)
-                        NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
-                    }
-                }
+                SettingsLink { Text("Settings...") }
                 Divider()
                 Button("Quit") { NSApplication.shared.terminate(nil) }
             }
