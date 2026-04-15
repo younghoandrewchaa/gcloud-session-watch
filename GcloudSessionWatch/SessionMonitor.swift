@@ -59,6 +59,8 @@ final class SessionMonitor: ObservableObject {
     deinit {
         timer?.invalidate()
         displayTimer?.invalidate()
+        // NonisolatedNonsendingByDefault treats deinit as nonisolated; assumeIsolated
+        // is safe here because SessionMonitor is @MainActor and always deinits on main.
         MainActor.assumeIsolated { fileWatcher?.stop() }
         if let observer = defaultsObserver {
             NotificationCenter.default.removeObserver(observer)
