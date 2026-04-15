@@ -28,7 +28,8 @@ final class SessionMonitor: ObservableObject {
     private var displayTimer: Timer?
     private var expiryDate: Date?
     private var defaultsObserver: NSObjectProtocol?
-    
+    private var fileWatcher: FileWatcher?
+
     private let fileProvider: FileTimestampProvider
     private let credentialsPath: String
     
@@ -51,12 +52,14 @@ final class SessionMonitor: ObservableObject {
         startTimer()
         startDisplayTimer()
         observeDefaults()
+        startFileWatcher()
         requestNotificationPermission()
     }
     
     deinit {
         timer?.invalidate()
         displayTimer?.invalidate()
+        MainActor.assumeIsolated { fileWatcher?.stop() }
         if let observer = defaultsObserver {
             NotificationCenter.default.removeObserver(observer)
         }
@@ -142,6 +145,8 @@ private extension SessionMonitor {
             return
         }
 
+        fileWatcher?.start()   // no-op if already watching; re-attaches after first-time login
+
         let expiry = mtime.addingTimeInterval(sessionDurationSeconds)
         self.expiryDate = expiry
         let remaining = expiry.timeIntervalSinceNow
@@ -214,6 +219,13 @@ private extension SessionMonitor {
                 self.tick()
             }
         }
+    }
+
+    func startFileWatcher() {
+        fileWatcher = FileWatcher(path: credentialsPath) { [weak self] in
+            self?.tick()
+        }
+        fileWatcher?.start()
     }
 
 }
