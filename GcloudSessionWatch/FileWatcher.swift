@@ -47,7 +47,9 @@ final class FileWatcher {
     }
 
     deinit {
-        source?.cancel()
-        source = nil
+        // source is @MainActor-isolated; assumeIsolated is safe because FileWatcher
+        // is always held by SessionMonitor (@MainActor), so deinit runs on main.
+        // source = nil is omitted — the object is being deallocated anyway.
+        MainActor.assumeIsolated { source?.cancel() }
     }
 }
