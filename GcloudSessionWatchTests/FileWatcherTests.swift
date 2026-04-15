@@ -60,6 +60,18 @@ final class FileWatcherTests: XCTestCase {
         }
 
         await fulfillment(of: [exp2], timeout: 1.0)
+        XCTAssertEqual(callCount, 2, "onChange should fire exactly twice: delete + re-attach write")
+        watcher.stop()
+    }
+
+    func test_missingFile_doesNotCrashAndNeverCallsOnChange() async throws {
+        let nonExistentPath = tempDir.appendingPathComponent("does_not_exist.json").path
+        var callCount = 0
+        let watcher = FileWatcher(path: nonExistentPath) { callCount += 1 }
+        watcher.start() // open() fails; must return early without crash
+
+        try await Task.sleep(nanoseconds: 200_000_000) // 0.2 s
+        XCTAssertEqual(callCount, 0, "onChange must not fire for a non-existent file")
         watcher.stop()
     }
 }
