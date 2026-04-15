@@ -28,8 +28,8 @@ final class FileWatcher {
                     self.source?.cancel()
                     self.source = nil
                     self.onChange()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        MainActor.assumeIsolated { self.start() }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+                        MainActor.assumeIsolated { self?.start() }
                     }
                 } else {
                     self.onChange()
@@ -42,6 +42,11 @@ final class FileWatcher {
     }
 
     func stop() {
+        source?.cancel()
+        source = nil
+    }
+
+    deinit {
         source?.cancel()
         source = nil
     }
