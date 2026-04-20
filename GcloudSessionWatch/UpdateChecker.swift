@@ -37,6 +37,7 @@ final class UpdateChecker: ObservableObject {
 
     /// Strips a leading "v" and splits by "." into an array of Ints.
     /// "v1.2.3" → [1, 2, 3], "1.0" → [1, 0]
+    /// Non-numeric segments (e.g. pre-release "-beta.1") are silently dropped — pre-releases are not treated as updates.
     static func parseVersion(_ string: String) -> [Int] {
         let stripped = string.hasPrefix("v") ? String(string.dropFirst()) : string
         return stripped.split(separator: ".").compactMap { Int($0) }
@@ -46,9 +47,9 @@ final class UpdateChecker: ObservableObject {
     /// Both arrays are zero-padded to the same length before comparison.
     static func isNewer(_ tagVersion: [Int], than appVersion: [Int]) -> Bool {
         let maxLen = max(tagVersion.count, appVersion.count)
-        let t = tagVersion + Array(repeating: 0, count: maxLen - tagVersion.count)
-        let a = appVersion + Array(repeating: 0, count: maxLen - appVersion.count)
-        for (tv, av) in zip(t, a) {
+        let tag = tagVersion + Array(repeating: 0, count: maxLen - tagVersion.count)
+        let app = appVersion + Array(repeating: 0, count: maxLen - appVersion.count)
+        for (tv, av) in zip(tag, app) {
             if tv > av { return true }
             if tv < av { return false }
         }
