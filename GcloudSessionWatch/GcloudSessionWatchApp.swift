@@ -2,9 +2,8 @@ import SwiftUI
 
 @main
 struct GcloudSessionWatchApp: App {
-    // @StateObject evaluates SessionMonitor() on first SwiftUI render (main thread).
-    // Safe to call the @MainActor init from here.
     @StateObject private var monitor = SessionMonitor()
+    @AppStorage("sessionDurationHours") private var sessionDurationHours: Int = 4
 
     var body: some Scene {
         MenuBarExtra {
@@ -13,11 +12,15 @@ struct GcloudSessionWatchApp: App {
                     .foregroundStyle(monitor.labelColor)
                     .font(.system(.body, design: .monospaced))
                 Divider()
-                SettingsLink { Text("Settings...") }
+                Stepper(
+                    "Duration: \(sessionDurationHours)h",
+                    value: $sessionDurationHours,
+                    in: 1...24
+                )
                 Divider()
                 Button("Quit") { NSApplication.shared.terminate(nil) }
             }
-            .frame(width: 160)
+            .frame(width: 200)
             .padding(.vertical, 8)
         } label: {
             Image(nsImage: {
@@ -29,9 +32,5 @@ struct GcloudSessionWatchApp: App {
             }())
         }
         .menuBarExtraStyle(.window)
-
-        Settings {
-            SettingsView()
-        }
     }
 }
