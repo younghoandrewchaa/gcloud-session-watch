@@ -23,6 +23,7 @@ final class UpdateChecker: ObservableObject {
     private let appVersion: String
     private let fetcher: (URL) async throws -> Data
     private var hasStarted = false
+    private var periodicTimer: Timer?
 
     init(
         appVersion: String = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0.0",
@@ -64,7 +65,7 @@ final class UpdateChecker: ObservableObject {
         guard !hasStarted else { return }
         hasStarted = true
         Task { await checkForUpdates() }
-        Timer.scheduledTimer(withTimeInterval: 86_400, repeats: true) { [weak self] _ in
+        periodicTimer = Timer.scheduledTimer(withTimeInterval: 86_400, repeats: true) { [weak self] _ in
             guard let self else { return }
             Task { await self.checkForUpdates() }
         }
