@@ -21,3 +21,6 @@ GcloudSessionWatch/GcloudSessionWatchTests/
 # Release artefacts
 ExportOptions.plist
 build/
+
+# Git worktrees
+.worktrees/
