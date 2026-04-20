@@ -58,6 +58,18 @@ final class UpdateChecker: ObservableObject {
 
     private static let apiURL = URL(string: "https://api.github.com/repos/younghoandrewchaa/gcloud-session-watch/releases/latest")!
 
+    /// Calls checkForUpdates() immediately, then every 24 hours.
+    /// Safe to call multiple times — subsequent calls are no-ops.
+    func startPeriodicChecks() {
+        guard !hasStarted else { return }
+        hasStarted = true
+        Task { await checkForUpdates() }
+        Timer.scheduledTimer(withTimeInterval: 86_400, repeats: true) { [weak self] _ in
+            guard let self else { return }
+            Task { await self.checkForUpdates() }
+        }
+    }
+
     func checkForUpdates() async {
         do {
             let data = try await fetcher(Self.apiURL)
