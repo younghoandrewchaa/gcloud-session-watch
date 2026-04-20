@@ -337,7 +337,10 @@ import SwiftUI
 
 @main
 struct GcloudSessionWatchApp: App {
+    // @StateObject evaluates SessionMonitor() on first SwiftUI render (main thread).
+    // Safe to call the @MainActor init from here.
     @StateObject private var monitor = SessionMonitor()
+    @AppStorage("sessionDurationHours") private var sessionDurationHours: Int = 5
 
     var body: some Scene {
         MenuBarExtra {
@@ -346,11 +349,15 @@ struct GcloudSessionWatchApp: App {
                     .foregroundStyle(monitor.labelColor)
                     .font(.system(.body, design: .monospaced))
                 Divider()
-                SettingsLink { Text("Settings...") }
+                Stepper(
+                    "Duration: \(sessionDurationHours)h",
+                    value: $sessionDurationHours,
+                    in: 1...24
+                )
                 Divider()
                 Button("Quit") { NSApplication.shared.terminate(nil) }
             }
-            .frame(width: 160)
+            .frame(width: 200)
             .padding(.vertical, 8)
         } label: {
             Image(nsImage: {
@@ -362,10 +369,6 @@ struct GcloudSessionWatchApp: App {
             }())
         }
         .menuBarExtraStyle(.window)
-
-        Settings {
-            SettingsView()
-        }
     }
 }
 ```
@@ -377,8 +380,11 @@ import SwiftUI
 
 @main
 struct GcloudSessionWatchApp: App {
+    // @StateObject evaluates SessionMonitor() on first SwiftUI render (main thread).
+    // Safe to call the @MainActor init from here.
     @StateObject private var monitor = SessionMonitor()
     @StateObject private var updateChecker = UpdateChecker()
+    @AppStorage("sessionDurationHours") private var sessionDurationHours: Int = 5
 
     var body: some Scene {
         MenuBarExtra {
@@ -410,7 +416,11 @@ struct GcloudSessionWatchApp: App {
                     .foregroundStyle(monitor.labelColor)
                     .font(.system(.body, design: .monospaced))
                 Divider()
-                SettingsLink { Text("Settings...") }
+                Stepper(
+                    "Duration: \(sessionDurationHours)h",
+                    value: $sessionDurationHours,
+                    in: 1...24
+                )
                 Divider()
                 Button("Quit") { NSApplication.shared.terminate(nil) }
             }
@@ -429,15 +439,9 @@ struct GcloudSessionWatchApp: App {
             }())
         }
         .menuBarExtraStyle(.window)
-
-        Settings {
-            SettingsView()
-        }
     }
 }
 ```
-
-> **Note on width:** The frame width is widened from 160 to 200 to give the update banner enough room to display without clipping.
 
 > **Note on `NSWorkspace`:** `@Environment(\.openURL)` is a View-only API. Since the MenuBarExtra content is a view builder inside the App (not a standalone `View` struct), `NSWorkspace.shared.open(url)` is used instead — it opens the URL in the default browser the same way.
 
@@ -474,7 +478,7 @@ Temporarily change the `UpdateChecker()` init in `GcloudSessionWatchApp.swift` t
     appVersion: "0.0.1",
     fetcher: { _ in
         Data("""
-        {"tag_name":"v1.2.0","html_url":"https://github.com/younghoandrewchaa/gcloud-session-watch/releases"}
+        {"tag_name":"v1.3.0","html_url":"https://github.com/younghoandrewchaa/gcloud-session-watch/releases"}
         """.utf8)
     }
 )
@@ -483,14 +487,14 @@ Temporarily change the `UpdateChecker()` init in `GcloudSessionWatchApp.swift` t
 - [ ] **Step 2: Run the app and verify the banner**
 
 Run the app (⌘R in Xcode). Click the menu bar icon. Verify:
-- A blue banner "v1.2.0 available" appears at the top of the popover ✓
+- A blue banner "v1.3.0 available" appears at the top of the popover ✓
 - Clicking **Update** opens the browser to the releases page, and the banner disappears ✓
 - Clicking **Later** dismisses the banner without opening the browser ✓
 - Opening the popover a second time: the banner is gone (it was dismissed) ✓
 
 - [ ] **Step 3: Revert the temporary test init**
 
-Change back to:
+Restore to:
 
 ```swift
 @StateObject private var updateChecker = UpdateChecker()
