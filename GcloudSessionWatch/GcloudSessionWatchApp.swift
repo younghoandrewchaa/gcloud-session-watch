@@ -12,25 +12,28 @@ struct GcloudSessionWatchApp: App {
         MenuBarExtra {
             VStack(spacing: 8) {
                 if let update = updateChecker.availableUpdate {
-                    HStack(spacing: 8) {
-                        Image(systemName: "arrow.down.circle.fill")
-                            .foregroundStyle(.blue)
-                        Text("v\(update.version) available")
-                            .font(.caption)
-                            .foregroundStyle(.blue)
-                        Spacer()
-                        Button("Update") {
-                            updateChecker.availableUpdate = nil
-                            NSWorkspace.shared.open(update.url)
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack(spacing: 6) {
+                            Image(systemName: "arrow.down.circle.fill")
+                                .foregroundStyle(.blue)
+                            Text("v\(update.version) available")
+                                .font(.caption)
+                                .foregroundStyle(.blue)
                         }
-                        .controlSize(.small)
-                        .buttonStyle(.borderedProminent)
-                        Button("Later") {
-                            updateChecker.availableUpdate = nil
+                        HStack(spacing: 8) {
+                            Button("Update") {
+                                updateChecker.availableUpdate = nil
+                                NSWorkspace.shared.open(update.url)
+                            }
+                            .controlSize(.small)
+                            .buttonStyle(.borderedProminent)
+                            Button("Later") {
+                                updateChecker.availableUpdate = nil
+                            }
+                            .controlSize(.small)
+                            .buttonStyle(.plain)
+                            .foregroundStyle(.secondary)
                         }
-                        .controlSize(.small)
-                        .buttonStyle(.plain)
-                        .foregroundStyle(.secondary)
                     }
                     Divider()
                 }
