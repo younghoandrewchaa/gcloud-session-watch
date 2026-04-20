@@ -56,10 +56,11 @@ final class UpdateChecker: ObservableObject {
         return false // equal
     }
 
+    private static let apiURL = URL(string: "https://api.github.com/repos/younghoandrewchaa/gcloud-session-watch/releases/latest")!
+
     func checkForUpdates() async {
-        let apiURL = URL(string: "https://api.github.com/repos/younghoandrewchaa/gcloud-session-watch/releases/latest")!
         do {
-            let data = try await fetcher(apiURL)
+            let data = try await fetcher(Self.apiURL)
             let release = try JSONDecoder().decode(GitHubRelease.self, from: data)
             let tagComponents = Self.parseVersion(release.tagName)
             let appComponents = Self.parseVersion(appVersion)
