@@ -48,4 +48,62 @@ final class UpdateCheckerTests: XCTestCase {
         // app "1.0" ([1,0]) vs tag "v1.0.0" ([1,0,0]) → equal, not newer
         XCTAssertFalse(UpdateChecker.isNewer([1, 0, 0], than: [1, 0]))
     }
+
+    // MARK: - checkForUpdates
+
+    func test_newerVersion_setsAvailableUpdate() async {
+        let json = Data("""
+        {"tag_name":"v2.0.0","html_url":"https://github.com/younghoandrewchaa/gcloud-session-watch/releases/tag/v2.0.0"}
+        """.utf8)
+        let checker = UpdateChecker(appVersion: "1.0", fetcher: { _ in json })
+
+        await checker.checkForUpdates()
+
+        XCTAssertEqual(checker.availableUpdate?.version, "2.0.0")
+        XCTAssertEqual(
+            checker.availableUpdate?.url,
+            URL(string: "https://github.com/younghoandrewchaa/gcloud-session-watch/releases/tag/v2.0.0")
+        )
+    }
+
+    func test_sameVersion_doesNotSetAvailableUpdate() async {
+        let json = Data("""
+        {"tag_name":"v1.0.0","html_url":"https://github.com/younghoandrewchaa/gcloud-session-watch/releases/tag/v1.0.0"}
+        """.utf8)
+        let checker = UpdateChecker(appVersion: "1.0", fetcher: { _ in json })
+
+        await checker.checkForUpdates()
+
+        XCTAssertNil(checker.availableUpdate)
+    }
+
+    func test_olderVersion_doesNotSetAvailableUpdate() async {
+        let json = Data("""
+        {"tag_name":"v0.9.0","html_url":"https://github.com/younghoandrewchaa/gcloud-session-watch/releases/tag/v0.9.0"}
+        """.utf8)
+        let checker = UpdateChecker(appVersion: "1.0", fetcher: { _ in json })
+
+        await checker.checkForUpdates()
+
+        XCTAssertNil(checker.availableUpdate)
+    }
+
+    func test_networkError_doesNotSetAvailableUpdate() async {
+        let checker = UpdateChecker(
+            appVersion: "1.0",
+            fetcher: { _ in throw URLError(.notConnectedToInternet) }
+        )
+
+        await checker.checkForUpdates()
+
+        XCTAssertNil(checker.availableUpdate)
+    }
+
+    func test_malformedJson_doesNotSetAvailableUpdate() async {
+        let checker = UpdateChecker(appVersion: "1.0", fetcher: { _ in Data("not json".utf8) })
+
+        await checker.checkForUpdates()
+
+        XCTAssertNil(checker.availableUpdate)
+    }
 }
