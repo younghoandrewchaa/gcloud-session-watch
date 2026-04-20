@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @AppStorage("sessionDurationHours") private var sessionDurationHours: Int = 5
+    @AppStorage("sessionDurationHours") private var sessionDurationHours: Int = 4
 
     var body: some View {
         Form {
