@@ -22,13 +22,13 @@ struct GcloudSessionWatchApp: App {
                         }
                         HStack(spacing: 8) {
                             Button("Update") {
-                                updateChecker.availableUpdate = nil
                                 NSWorkspace.shared.open(update.url)
+                                updateChecker.dismiss()
                             }
                             .controlSize(.small)
                             .buttonStyle(.borderedProminent)
                             Button("Later") {
-                                updateChecker.availableUpdate = nil
+                                updateChecker.dismiss()
                             }
                             .controlSize(.small)
                             .buttonStyle(.plain)

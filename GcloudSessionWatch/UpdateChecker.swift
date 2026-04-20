@@ -18,7 +18,7 @@ struct AvailableUpdate: Equatable {
 
 @MainActor
 final class UpdateChecker: ObservableObject {
-    @Published var availableUpdate: AvailableUpdate?
+    @Published private(set) var availableUpdate: AvailableUpdate?
 
     private let appVersion: String
     private let fetcher: (URL) async throws -> Data
@@ -65,10 +65,16 @@ final class UpdateChecker: ObservableObject {
         guard !hasStarted else { return }
         hasStarted = true
         Task { await checkForUpdates() }
-        periodicTimer = Timer.scheduledTimer(withTimeInterval: 86_400, repeats: true) { [weak self] _ in
+        let t = Timer(timeInterval: 86_400, repeats: true) { [weak self] _ in
             guard let self else { return }
             Task { await self.checkForUpdates() }
         }
+        RunLoop.main.add(t, forMode: .common)
+        periodicTimer = t
+    }
+
+    func dismiss() {
+        availableUpdate = nil
     }
 
     func checkForUpdates() async {

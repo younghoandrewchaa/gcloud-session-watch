@@ -106,4 +106,18 @@ final class UpdateCheckerTests: XCTestCase {
 
         XCTAssertNil(checker.availableUpdate)
     }
+
+    // MARK: - startPeriodicChecks
+
+    func test_startPeriodicChecks_isIdempotent() async {
+        var callCount = 0
+        let checker = UpdateChecker(appVersion: "1.0", fetcher: { _ in
+            callCount += 1
+            throw URLError(.cancelled)
+        })
+        checker.startPeriodicChecks()
+        checker.startPeriodicChecks()
+        await Task.yield()
+        XCTAssertEqual(callCount, 1, "checkForUpdates should only be called once despite two startPeriodicChecks calls")
+    }
 }
