@@ -2,6 +2,8 @@ import SwiftUI
 
 @main
 struct GcloudSessionWatchApp: App {
+    // @StateObject evaluates SessionMonitor() on first SwiftUI render (main thread).
+    // Safe to call the @MainActor init from here.
     @StateObject private var monitor = SessionMonitor()
     @AppStorage("sessionDurationHours") private var sessionDurationHours: Int = 4
 

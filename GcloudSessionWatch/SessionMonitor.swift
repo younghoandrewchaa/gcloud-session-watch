@@ -46,8 +46,8 @@ final class SessionMonitor: ObservableObject {
         self.fileProvider = fileProvider
         self.credentialsPath = credentialsPath
         let hours = UserDefaults.standard.integer(forKey: "sessionDurationHours")
-        self.sessionDurationSeconds = TimeInterval(hours == 0 ? 5 : hours) * 3600
-        
+        self.sessionDurationSeconds = TimeInterval(hours == 0 ? 4 : hours) * 3600
+
         tick()
         startTimer()
         startDisplayTimer()
@@ -215,7 +215,7 @@ private extension SessionMonitor {
             MainActor.assumeIsolated {
                 guard let self else { return }
                 let hours = UserDefaults.standard.integer(forKey: "sessionDurationHours")
-                let newSeconds = TimeInterval(hours == 0 ? 5 : hours) * 3600
+                let newSeconds = TimeInterval(hours == 0 ? 4 : hours) * 3600
                 guard newSeconds != self.sessionDurationSeconds else { return }
                 self.sessionDurationSeconds = newSeconds
                 self.tick()
